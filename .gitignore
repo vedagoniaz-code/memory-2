@@ -1,0 +1,9 @@
+﻿*
+!.gitignore
+!main.py
+!buildozer.spec
+!.github/
+!.github/**
+!buttons/
+!buttons/*.jpg
+!buttons/*.mp3
