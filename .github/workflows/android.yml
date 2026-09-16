@@ -1,73 +1,68 @@
 name: Build MEMORY 2 APK
-on: null
-workflow_dispatch: null
-push: null
-jobs: null
-build: null
-runs-on: ubuntu-22.04
-steps:
-  - name: Checkout
-    uses: actions/checkout@v5
-  - name: Set up Python
-    uses: actions/setup-python@v6
-    with:
-      python-version: '3.11'
-  - name: Install system dependencies
-    run: |
-      sudo apt-get update
-      sudo apt-get install -y \
-        build-essential \
-        git \
-        zip \
-        unzip \
-        openjdk-17-jdk \
-        autoconf \
-        automake \
-        libtool \
-        pkg-config \
-        zlib1g-dev \
-        libncurses5-dev \
-        libncursesw5-dev \
-        cmake \
-        libffi-dev
-  - name: Install Buildozer
-    run: |
-      python -m pip install --upgrade pip
-      python -m pip install buildozer cython==0.29.37
-  - name: Prepare Buildozer
-    run: |
-      buildozer android debug 2>&1 | tee buildozer_prepare.log || true
-  - name: Accept Android SDK licenses
-    run: |
-      SDKMANAGER="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager"
-
-      if [ -f "$SDKMANAGER" ]; then
-        yes | "$SDKMANAGER" --licenses || true
-      else
-        echo "sdkmanager not found at:"
-        echo "$SDKMANAGER"
-        find "$HOME/.buildozer/android/platform/android-sdk" -name sdkmanager -type f || true
-      fi
-  - name: Install Android Build Tools
-    run: |
-      SDK="$HOME/.buildozer/android/platform/android-sdk"
-      SDKMANAGER="$SDK/cmdline-tools/latest/bin/sdkmanager"
-
-      if [ -f "$SDKMANAGER" ]; then
-        yes | "$SDKMANAGER" \
-          "platform-tools" \
-          "platforms;android-35" \
-          "build-tools;35.0.0"
-      else
-        echo "sdkmanager not found"
-        exit 1
-      fi
-  - name: Build APK
-    run: |
-      buildozer android debug
-  - name: Upload APK
-    uses: actions/upload-artifact@v4
-    with:
-      name: memory-2-apk
-      path: bin/*.apk
-
+on: [workflow_dispatch, push]
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            git \
+            zip \
+            unzip \
+            openjdk-17-jdk \
+            autoconf \
+            automake \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            cmake \
+            libffi-dev
+      - name: Install Buildozer
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install buildozer cython==0.29.37
+      - name: Prepare Buildozer
+        run: |
+          buildozer android debug 2>&1 | tee buildozer_prepare.log || true
+      - name: Accept Android SDK licenses
+        run: |
+          SDKMANAGER="$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager"
+          if [ -f "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" --licenses || true
+          else
+            echo "sdkmanager not found at:"
+            echo "$SDKMANAGER"
+            find "$HOME/.buildozer/android/platform/android-sdk" -name sdkmanager -type f || true
+          fi
+      - name: Install Android Build Tools
+        run: |
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+          SDKMANAGER="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          if [ -f "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" \
+              "platform-tools" \
+              "platforms;android-35" \
+              "build-tools;35.0.0"
+          else
+            echo "sdkmanager not found"
+            exit 1
+          fi
+      - name: Build APK
+        run: |
+          buildozer android debug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: memory-2-apk
+          path: bin/*.apk
