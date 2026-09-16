@@ -35,6 +35,7 @@ jobs:
       - name: Prepare Buildozer
         run: |
           buildozer android debug 2>&1 | tee buildozer_prepare.log || true
+          echo "Buildozer preparation finished"
       - name: Accept Android SDK licenses
         run: |
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
