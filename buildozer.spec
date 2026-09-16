@@ -9,6 +9,8 @@ version = 2.1
 
 requirements = python3,pygame
 
+android.accept_sdk_license = True
+
 orientation = landscape
 fullscreen = 1
 
